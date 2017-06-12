@@ -5,8 +5,8 @@
  * Code: Sequential Version
  *
  * Two input files are provided: HPCSquadGoalsInput1.txt and HPCSquadGoalsInput2.txt
- * Compilation Instructions: g++ -std=c++11 HPCSquadGoalsSerial.cpp -o a.out
- * Execution Instructions: ./a.out < [Input file name]
+ * Compilation Instructions: g++ -std=c++11 [file name] -o [exe name]
+ * Execution Instructions: ./[exe name] < [Input file name]
  * Output is written to HPCSquadGoalsOutput.txt
  */
 
