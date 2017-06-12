@@ -5,8 +5,8 @@
  * Code: Parallel Version
  *
  * Input file: HPCSquadGoalsInput1.txt
- * Compilation Instructions: mpic++ -std=c++11 HPCSquadGoalsParallel.cpp -o a.out
- * Execution Instructions: qsub script
+ * Compilation Instructions: mpic++ -std=c++11 [file name] -o [exe name]
+ * Execution Instructions: mpirun -np [number of processes] [exe name]
  *
  * **The number of processors used must be at least N*(N-1)/2, where N is the number
  * **of strings in the input file. For optimal results, the number of processors
