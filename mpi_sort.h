@@ -3,13 +3,6 @@
 #include <algorithm>
 #include <math.h>
 
-struct Sort
-{
-	bool operator(const int& a, const int& b) {
-		return a < b;
-	}
-}
-
 struct SortByLength
 {
   bool inline operator()(const std::string& a, const std::string& b) throw()
@@ -39,7 +32,7 @@ void MPI_Sort(std::vector<DataType> &data, std::size_t num_proc,
               const Func& func = SortByLength{}, MPI_Comm comm, int rank)
 {
   std::size_t data_size = data.size()/num_proc;
-  if(data_size > 500)
+  if(data_size < 500)
     std::sort(data.begin(), data.end());
   else
   {
@@ -48,7 +41,7 @@ void MPI_Sort(std::vector<DataType> &data, std::size_t num_proc,
     MPI_Scatter(&data[i], data_size, MPI::INT, &sub_data[0], data_size,
                 MPI_INT, 0, comm);
 
-    std::sort(sub_data.begin(), sub_data.end(), func);
+    std::sort(sub_data.begin(), sub_data.end());
     MPI_Barrier(comm);
 
     std::size_t level = 1;
