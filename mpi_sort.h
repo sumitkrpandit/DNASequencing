@@ -3,6 +3,12 @@
 #include <algorithm>
 #include <math.h>
 
+struct Sort
+{
+	bool operator(const int& a, const int& b) {
+		return a < b;
+	}
+}
 
 struct SortByLength
 {
@@ -30,11 +36,11 @@ std::vector<DataType> merge(std::vector<DataType> vec1, std::vector<DataType> ve
 
 template <typename DataType, typename Func>
 void MPI_Sort(std::vector<DataType> &data, std::size_t num_proc,
-              const Func& func = SortByLength{}, MPI_Comm comm, int* rank)
+              const Func& func = SortByLength{}, MPI_Comm comm, int rank)
 {
   std::size_t data_size = data.size()/num_proc;
   if(data_size > 500)
-    std::sort(data.begin(), data.end(), func);
+    std::sort(data.begin(), data.end());
   else
   {
     std::vector<DataType> sub_data(data_size);
