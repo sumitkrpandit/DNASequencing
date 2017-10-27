@@ -1,5 +1,6 @@
 OBJS:=$(shell ls *.cpp | sed 's/.cpp//g')
 CC=mpic++
+
 default: compile
 
 all: compile
