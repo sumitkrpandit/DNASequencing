@@ -51,7 +51,7 @@ int overlapStrings(string& a, string& b) {
 pair<int, int> overlapStrings(pair<string, string> str_pair) {
 
   int first = overlapStrings(str_pair.first, str_pair.second);
-  int second = overlapStirngs(str_pair.second, str_pair.first);
+  int second = overlapStrings(str_pair.second, str_pair.first);
 
   return make_pair(first, second);
 }
