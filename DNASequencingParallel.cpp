@@ -55,7 +55,7 @@ set<string, SortByLength> Result;
 int overlapStrings(string& str1, string& str2) throw();
 
 /*************************************************************************
- * Recursive Function to combine a vector of strings into their shortest 
+ * Recursive Function to combine a vector of strings into their shortest
  * common superstring
  * Parameters: A vector of strings
  */
@@ -82,7 +82,7 @@ int main(int argc, char** argv)
 	if(proc_rank == 0)
 	{
 		//Routine for process 0
-		
+
 		double mpist, mpiend;
 		struct timespec now, tmstart;
 
@@ -111,7 +111,7 @@ int main(int argc, char** argv)
 
 		//Find all possible combinations for shortest common superstring
 		combineStrings(data);
-		
+
 		//End timers
 		mpiend = MPI_Wtime();
 		clock_gettime(CLOCK_REALTIME, &now);
@@ -172,7 +172,7 @@ int main(int argc, char** argv)
 				b.resize(str_data[1]);
 
 				//receive both strings
-				MPI_Recv(&a[0], str_data[0], MPI_CHAR, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);	
+				MPI_Recv(&a[0], str_data[0], MPI_CHAR, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 				MPI_Recv(&b[0], str_data[1], MPI_CHAR, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
 				//Get overlap for both strings
@@ -236,7 +236,7 @@ int overlapStrings(string& str1, string& str2) throw()
 		str4.resize(minLength-i);
 
 		//get the first end of str3
-		reverse(str3.begin(), str3.end());		
+		reverse(str3.begin(), str3.end());
 		str3.resize(minLength-i);
 		reverse(str3.begin(), str3.end());
 
@@ -314,7 +314,7 @@ void combineStrings(vector<string>& data) throw()
 		}
 		else if(str_data[0] == maxOverlap){
 			//current overlap is the same as the maximum, so add possible pair(s) without removing the previous pairs
-				
+
 			if(str_data[1] == 0){
 				possiblePairs.push_back(stringPairs[i-1]);
 			}
@@ -329,7 +329,7 @@ void combineStrings(vector<string>& data) throw()
 
 	}
 
-	stringPairs.clear();	
+	stringPairs.clear();
 	//Combine data for each possible pair of maximum overlap
 	string jointString;
 	vector<string> possibleData;
