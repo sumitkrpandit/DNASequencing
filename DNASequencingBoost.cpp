@@ -146,7 +146,6 @@ int main()
     pair<string, string> strPair;
     pair<int, int> overlap_data,
       overlap;
-    int overlap1, overlap2;
     signal = 0;
 
     //Do while loop so other processes can keep receiving and comparing strings from process 0 until process 0 is done with combining
@@ -169,7 +168,7 @@ int main()
         }
         else{
           //both strings have the same overlap, so use both combinations
-          overlap_data = make_pair(overlap1, 2);
+          overlap_data = make_pair(overlap.first, 2);
         }
 
         world.send(0, 0, overlap_data); //send overlap data back

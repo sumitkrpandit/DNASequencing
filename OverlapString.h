@@ -23,7 +23,7 @@ int overlapStrings(string& a, string& b) {
          temp_b = b.substr(0, min_length); //holds first part of string b
 
 
-  for(int i = 1; i < min_length; i++) {
+  for(int i = 0; i < min_length; i++) {
     temp_b.resize(min_length - i); //get first end of str b
 
     //get first end of string a
