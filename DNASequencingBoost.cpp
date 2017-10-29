@@ -1,12 +1,12 @@
 /*
  * Team: #HPCSquadGoals
- * Team members: Anthony Enem, Ali Khalid, Kenadi Campbell
+ * Team members: Anthony Enem, Ali Khalid
  * Project: DNA Squencing with Shortest Common Superstring
  * Code: Parallel Version
  *
  * Input file: HPCSquadGoalsInput1.txt
- * Compilation Instructions: mpic++ -std=c++11 [file name] -o [exe name]
- * Execution Instructions: mpirun -np [number of processes] [exe name]
+ * Compilation Instructions: use the make file to comile
+ * Execution Instructions: mpirun -np [number of processes] [exe name] < in.txt
  *
  * **The number of processors used must be at least N*(N-1)/2, where N is the number
  * **of strings in the input file. For optimal results, the number of processors
@@ -53,13 +53,6 @@ set<string, SortByLength> Result;
 
 //Function prototypes
 
-/**********************************************
- * Function to find the length of the maximum overlap between the end of
- * str1 and the start of str2
- * Parameters: 2 strings
- */
-//int overlapStrings(string& str1, string& str2) throw();
-
 /*************************************************************************
  * Recursive Function to combine a vector of strings into their shortest
  * common superstring
@@ -104,20 +97,15 @@ int main()
       data.push_back(str);
     }
 
-    //Sort input strings based on their lengths
-    sort(data.begin(), data.end(), SortByLength());
+    sort(data.begin(), data.end(), SortByLength()); //sort by length
+    removeSubstrings(data); //remove substrings
 
-    //Merge strings that are substrings of other strings
-    removeSubstrings(data);
-
-    //Start timers
-    clock_gettime(CLOCK_REALTIME, &tmstart);
+    clock_gettime(CLOCK_REALTIME, &tmstart); //start timer
 
     //Find all possible combinations for shortest common superstring
     combineStrings(data);
 
-    //End timers
-    clock_gettime(CLOCK_REALTIME, &now);
+    clock_gettime(CLOCK_REALTIME, &now); //end timer
     double seconds = (double)((now.tv_sec+now.tv_nsec*1e-9) - (double)(tmstart.tv_sec+tmstart.tv_nsec*1e-9));
 
     //Send signal for other processes to quit
@@ -140,7 +128,7 @@ int main()
     }
 
     //Redirect output to file
-    freopen("HPCSquadGoalsOutput.txt", "w", stdout);
+    freopen("output.txt", "w", stdout);
 
     //Print Results
     cout << "There are " << Result.size() << " possible shortest common superstrings with length " << Result.begin()->length() << "." << endl << endl;
@@ -168,11 +156,8 @@ int main()
 
       if(signal == 1)
       {
-        //receive both strings
-        world.recv(0, 0, strPair);
-
-        //Get overlap for both strings in both orders
-        overlap = overlapStrings(strPair);
+        world.recv(0, 0, strPair); //revieve string pair
+        overlap = overlapStrings(strPair); //get over lap in for ab and ba
 
         if(overlap.first > overlap.second){
           //string a should come before string b
@@ -187,8 +172,7 @@ int main()
           overlap_data = make_pair(overlap1, 2);
         }
 
-        //Send overlap data back to process 0
-        world.send(0, 0, overlap_data);
+        world.send(0, 0, overlap_data); //send overlap data back
 
       }
 
@@ -214,33 +198,6 @@ void removeSubstrings(vector<string>& data) throw()
     }
   }
 }
-/*
-int overlapStrings(string& str1, string& str2) throw()
-{
-  int i;
-  int minLength = min(str1.length(), str2.length());
-
-  //str3 holds the last part of str1, str4 holds the first part of str2
-  string str3 = str1.substr(str1.length()-minLength), str4 = str2.substr(0, minLength);
-
-  for(i = 0; i < minLength; i++){
-    //get the first end of str4
-    str4.resize(minLength-i);
-
-    //get the first end of str3
-    reverse(str3.begin(), str3.end());
-    str3.resize(minLength-i);
-    reverse(str3.begin(), str3.end());
-
-    //compare first end of str1 to last end of str2
-    if(str3 == str4){
-      //if strings are equal, then the largest overlap between str1 and str2 is found
-      return str3.length();
-    }
-  }
-
-  return 0;
-}*/
 
 void combineStrings(vector<string>& data) throw()
 {

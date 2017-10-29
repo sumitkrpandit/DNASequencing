@@ -18,20 +18,24 @@ using namespace std;
  * *********************************************************/
 int overlapStrings(string& a, string& b) {
   int overlap_length = 0;
-  int a_length = a.length() - 1;
   int min_length = min(a.length(), b.length());
+  string temp_a = a.substr(a.length() - min_length), //holds last part of string a
+         temp_b = b.substr(0, min_length); //holds first part of string b
 
 
   for(int i = 1; i < min_length; i++) {
+    temp_b.resize(min_length - i); //get first end of str b
 
-    string c = a.substr(a_length + 1 - i, i);
-    string d = b.substr(0, i);
+    //get first end of string a
+    reverse(temp_a.begin(), temp_a.end());
+    temp_a.resize(min_length - i);
+    reverse(temp_a.begin(), temp_a.end());
 
-    if(c == d)
-      overlap_length = i;
-
-    else if (overlap_length)
+    //compare start of a to end of b
+    if(temp_a == temp_b) {
+      overlap_length = temp_a.length();
       break;
+    }
 
   }
 
