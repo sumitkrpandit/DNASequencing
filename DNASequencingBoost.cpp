@@ -15,6 +15,7 @@
  * Output is written to HPCSquadGoalsOutput.txt
  */
 
+#include "OverlapString.h"
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -57,7 +58,7 @@ set<string, SortByLength> Result;
  * str1 and the start of str2
  * Parameters: 2 strings
  */
-int overlapStrings(string& str1, string& str2) throw();
+//int overlapStrings(string& str1, string& str2) throw();
 
 /*************************************************************************
  * Recursive Function to combine a vector of strings into their shortest
@@ -88,7 +89,6 @@ int main()
   {
     //Routine for process 0
 
-    double mpist, mpiend;
     struct timespec now, tmstart;
 
     int size;
@@ -150,14 +150,14 @@ int main()
     }
 
     cout << endl << "C Time: " << seconds << " seconds." << endl;
-    cout << "MPI time: " << mpiend-mpist << endl;
   }
   else{
     //Other processes will get a signal from process 0
     //Signal 1 means to compare 2 strings, Signal -1 means to quit
     //
     pair<string, string> strPair;
-    pair<int, int> overlap_data;
+    pair<int, int> overlap_data,
+      overlap;
     int overlap1, overlap2;
     signal = 0;
 
@@ -171,17 +171,16 @@ int main()
         //receive both strings
         world.recv(0, 0, strPair);
 
-        //Get overlap for both strings
-        overlap1 = overlapStrings(strPair.first, strPair.second);
-        overlap2 = overlapStrings(strPair.second, strPair.first);
+        //Get overlap for both strings in both orders
+        overlap = overlapStrings(strPair);
 
-        if(overlap1 > overlap2){
+        if(overlap.first > overlap.second){
           //string a should come before string b
-          overlap_data = make_pair(overlap1, 0);
+          overlap_data = make_pair(overlap.first, 0);
         }
-        else if(overlap1 < overlap2){
+        else if(overlap.first < overlap.second){
           //string b should come before string a
-          overlap_data = make_pair(overlap2, 1);
+          overlap_data = make_pair(overlap.second, 1);
         }
         else{
           //both strings have the same overlap, so use both combinations
@@ -215,7 +214,7 @@ void removeSubstrings(vector<string>& data) throw()
     }
   }
 }
-
+/*
 int overlapStrings(string& str1, string& str2) throw()
 {
   int i;
@@ -241,7 +240,7 @@ int overlapStrings(string& str1, string& str2) throw()
   }
 
   return 0;
-}
+}*/
 
 void combineStrings(vector<string>& data) throw()
 {
