@@ -1,14 +1,10 @@
 #!/bin/bash
 run_command=$1
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-NC='\003[0m'
-
 eval $run_command mpirun -np 4 DNASequencingBoost < in.txt
-if test $? != 0
+if test $? == 0
 then
-  echo -e "Error:: while running DNASequencingBoost."
+  printf "\033[0;32m[PASSED]\033[0m\n"
 else
-  echo -e "[PASSED]"
+  printf "\033[1;31mError:: while running DNASequencingBoost.\033[0m\n"
 fi
