@@ -6,7 +6,7 @@ using namespace std;
 
 #define PSS pair<string, string>
 
-class Cache { 
+class Cache {
     private:
         map<PSS, int> data;
 
@@ -20,7 +20,7 @@ class Cache {
             data[pss] = value;
         }
 
-        //Returns the cached value for a to b. 
+        //Returns the cached value for a to b.
         //If the overlap value is not in the cache, it returns -1
         int get(const string& a, const string& b) {
             PSS pss = make_pair(a, b);
