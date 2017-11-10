@@ -59,3 +59,38 @@ pair<int, int> overlapStrings(pair<string, string> str_pair) {
 
   return make_pair(first, second);
 }
+
+
+/**************************************************************************
+ * Function to remove strings that are subtrings of other strings in the
+ * same vector
+ * Parameters: A vector of strings
+ **************************************************************************/
+void removeSubstrings(vector<string>& data)
+{
+  for(int i = 0; i < data.size(); i++) {
+    for(int j = i+1; j < data.size(); j++) {
+      //If string i is a substring of string j, remove string i from the set of strings
+      if(data[j].find(data[i]) != string::npos) {
+        data.erase(data.begin()+i);
+        i--;
+        break;
+      }
+    }
+  }
+}
+
+
+//Functor to sort by length
+struct SortByLength
+{
+  bool inline operator()(const string& a, const string& b)
+  {
+    //If the lengths are equal, compare normally
+    if(a.length() == b.length()){
+      return a < b;
+    }
+    //else compare lengths
+    return a.length() < b.length();
+  }
+};

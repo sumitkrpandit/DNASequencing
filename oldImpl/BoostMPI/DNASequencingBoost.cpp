@@ -15,7 +15,7 @@
  * Output is written to HPCSquadGoalsOutput.txt
  */
 
-#include "OverlapString.h"
+#include "../common/StringProcessing.h"
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -33,45 +33,17 @@
 using namespace std;
 namespace mpi = boost::mpi;
 
-//Functor used to sort strings by their lengths
-struct SortByLength
-{
-  bool inline operator()(const string& a, const string& b) throw()
-  {
-    //If the lengths are equal, compare normally
-    if(a.length() == b.length()){
-      return a < b;
-    }
-    //else compare lengths
-    return a.length() < b.length();
-  }
-};
 
-//Set of strings to store possible results of shortest common superstrings
-//Results are sorted by length of strings
-set<string, SortByLength> Result;
-
-//Function prototypes
 
 /*************************************************************************
  * Recursive Function to combine a vector of strings into their shortest
  * common superstring
  * Parameters: A vector of strings
  */
-void combineStrings(vector<string>&) throw();
-
-/************************************************************************
- * Function to remove strings that are subtrings of other strings in the
- * same vector
- * Parameters: A vector of strings
- */
-void removeSubstrings(vector<string>& data) throw();
+void combineStrings(vector<string>&, set<string, SortByLength>&);
 
 #define QUIT 0
 #define PROCESS_DATA 1
-
-int proc;
-
 
 mpi::environment env;
 mpi::communicator world;
@@ -84,6 +56,7 @@ int main()
   {
     //Routine for process 0
 
+    set<string, SortByLength> Result;
     struct timespec now, tmstart;
 
     int size;
@@ -105,7 +78,7 @@ int main()
     clock_gettime(CLOCK_REALTIME, &tmstart); //start timer
 
     //Find all possible combinations for shortest common superstring
-    combineStrings(data);
+    combineStrings(data, Result);
 
     clock_gettime(CLOCK_REALTIME, &now); //end timer
     double seconds = (double)((now.tv_sec+now.tv_nsec*1e-9) - (double)(tmstart.tv_sec+tmstart.tv_nsec*1e-9));
@@ -185,21 +158,8 @@ int main()
   return 0;
 }
 
-void removeSubstrings(vector<string>& data) throw()
-{
-  for(int i = 0; i < data.size(); i++){
-    for(int j = i+1; j < data.size(); j++){
-      //If string i is a substring of string j, remove string i from the set of strings
-      if(data[j].find(data[i]) != string::npos){
-        data.erase(data.begin()+i);
-        i--;
-        break;
-      }
-    }
-  }
-}
 
-void combineStrings(vector<string>& data) throw()
+void combineStrings(vector<string>& data, set<string, SortByLength>& Result)
 {
   //Base case: If input has one string, then it is a superstring
   if(data.size() == 1){
@@ -210,7 +170,7 @@ void combineStrings(vector<string>& data) throw()
   int maxOverlap;
   vector<pair<int, int>> possiblePairs, stringPairs;
 
-  proc = 1;
+  int proc = 1;
   //Get the pairs of strings with the most overlap
   for(int i = 0; i < data.size(); i++){
     for(int j = i+1; j < data.size(); j++){
@@ -275,7 +235,7 @@ void combineStrings(vector<string>& data) throw()
     possibleData.push_back(jointString);
 
     //Recursively combine this possible set of data to find the shortest common superstrings
-    combineStrings(possibleData);
+    combineStrings(possibleData, Result);
   }
 
 }

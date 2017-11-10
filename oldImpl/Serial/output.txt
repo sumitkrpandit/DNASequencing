@@ -1,0 +1,5 @@
+There are 1 possible shortest common superstrings with length 12.
+
+xyzcdabccdef
+
+C Time: 1.95503e-05 seconds.

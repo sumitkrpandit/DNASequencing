@@ -8,7 +8,7 @@ all: compile
 compile: $(OBJS)
 
 %: %.cpp
-	${CC} -std=c++11 -O2 -o $@ $< /usr/lib/x86_64-linux-gnu/libboost_mpi.a /usr/lib/x86_64-linux-gnu/libboost_serialization.a
+	${CC} -std=c++11 -O2 -o $@ $<
 
 test: compile
 	./testme.sh
