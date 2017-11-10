@@ -67,7 +67,9 @@ void combineStrings(vector<string>&) throw();
  */
 void removeSubstrings(vector<string>& data) throw();
 
-int signal = 1;
+#define QUIT 0
+#define PROCESS_DATA 1
+
 int proc;
 
 
@@ -109,9 +111,8 @@ int main()
     double seconds = (double)((now.tv_sec+now.tv_nsec*1e-9) - (double)(tmstart.tv_sec+tmstart.tv_nsec*1e-9));
 
     //Send signal for other processes to quit
-    signal = -1;
     for(int i = 1; i < world.size(); i++){
-      world.send(i, 0, signal);
+      world.send(i, 0, QUIT);
     }
 
     //Remove strings that are longer that the first string
@@ -146,14 +147,14 @@ int main()
     pair<string, string> strPair;
     pair<int, int> overlap_data,
       overlap;
-    signal = 0;
+    int signal;
 
     //Do while loop so other processes can keep receiving and comparing strings from process 0 until process 0 is done with combining
     do{
       //Receive signal from process 0
       world.recv(0, 0, signal);
 
-      if(signal == 1)
+      if(signal == PROCESS_DATA)
       {
         world.recv(0, 0, strPair); //revieve string pair
         overlap = overlapStrings(strPair); //get over lap in for ab and ba
@@ -175,7 +176,7 @@ int main()
 
       }
 
-    }while(signal != -1); //repeat until process 0 sends the quit signal (-1)
+    }while(signal != QUIT); //repeat until process 0 sends the quit signal
 
   }
 
@@ -206,8 +207,7 @@ void combineStrings(vector<string>& data) throw()
     return;
   }
 
-  int maxOverlap, overlap;
-
+  int maxOverlap;
   vector<pair<int, int>> possiblePairs, stringPairs;
 
   proc = 1;
@@ -216,7 +216,7 @@ void combineStrings(vector<string>& data) throw()
     for(int j = i+1; j < data.size(); j++){
 
       //send signal to proc for checking overlap
-      world.send(proc, 0, signal);
+      world.send(proc, 0, PROCESS_DATA);
       //Send pair of strings to be compared
       world.send(proc, 0, make_pair(data[i], data[j]));
 
@@ -235,9 +235,12 @@ void combineStrings(vector<string>& data) throw()
     world.recv(i, 0, overlap_data);
 
     //If current overlap is the maximum
-    if(overlap_data.first > maxOverlap) {
-      //remove previous possible pairs
-      possiblePairs.clear();
+    if(overlap_data.first >= maxOverlap) {
+      if (overlap_data.first > maxOverlap) {
+        //remove previous possible pairs
+        possiblePairs.clear();
+        maxOverlap = overlap_data.first;
+      }
 
       if(overlap_data.second == 0) {
         //add new pair in same order
@@ -252,22 +255,6 @@ void combineStrings(vector<string>& data) throw()
         possiblePairs.push_back(stringPairs[i-1]);
         possiblePairs.push_back(make_pair(stringPairs[i-1].second, stringPairs[i-1].first));
       }
-      maxOverlap = overlap_data.first;
-
-    }
-    else if(overlap_data.first == maxOverlap) {
-      //current overlap is the same as the maximum, so add possible pair(s) without removing the previous pairs
-
-      if(overlap_data.second == 0) {
-        possiblePairs.push_back(stringPairs[i-1]);
-      }
-      else if(overlap_data.second == 1) {
-        possiblePairs.push_back(make_pair(stringPairs[i-1].second, stringPairs[i-1].first));
-      }
-      else{
-        possiblePairs.push_back(stringPairs[i-1]);
-        possiblePairs.push_back(make_pair(stringPairs[i-1].second, stringPairs[i-1].first));
-      }
     }
 
   }
@@ -276,7 +263,7 @@ void combineStrings(vector<string>& data) throw()
   //Combine data for each possible pair of maximum overlap
   string jointString;
   vector<string> possibleData;
-  for(auto p : possiblePairs){
+  for(const auto &p : possiblePairs){
     //join the two strings into a new string
     jointString = data[p.first] + data[p.second].substr(maxOverlap);
     //make duplicate of data
