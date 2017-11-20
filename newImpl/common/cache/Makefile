@@ -1,12 +1,17 @@
-default: seq
+OBJS:=$(shell ls *.cpp | sed 's/.cpp//g')
+CC=g++
 
-all: seq
+default: compile
+
+all: compile
+
+compile: $(OBJS)
+
+%: %.cpp
+	${CC} -std=c++11 -O2 -o $@ $<
+
+test: compile
+	./testme.sh
 
 clean:
-	rm DNASequencingSerialCache.o seq.out
-
-DNASequencingSerialCache.o: Cache.h DNASequencingSerialCache.cpp
-	g++ -std=c++11 -Wall -c -O3 DNASequencingSerialCache.cpp
-
-seq: DNASequencingSerialCache.o
-	g++ -std=c++11 -Wall -O3 DNASequencingSerialCache.o -o seq.out
+	rm -rf *.o a.out $(OBJS)

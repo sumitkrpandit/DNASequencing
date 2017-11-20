@@ -1,0 +1,6 @@
+There are 2 possible shortest common superstrings with length 19.
+
+cdabccdefxyzcdabccd
+xyzcdabccdcdabccdef
+
+C Time: 2.09808e-05 seconds.

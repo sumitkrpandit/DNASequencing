@@ -50,7 +50,7 @@ set<string, SortByLength> Result;
 int overlapStrings(string& str1, string& str2) throw();
 
 /*************************************************************************
- * Recursive Function to combine a vector of strings into their shortest 
+ * Recursive Function to combine a vector of strings into their shortest
  * common superstring
  * Parameters: A vector of strings
  */
@@ -71,9 +71,6 @@ Cache cache;
 //Main function
 int main(int argc, char** argv)
 {
-    //Redirect standard output to file
-    freopen("HPCSquadGoalsOutput.txt", "w", stdout);
-
     int size;
 
     string str;
@@ -156,7 +153,7 @@ int overlapStrings(const string& str1, const string& str2) throw()
         str4.resize(minLength-i);
 
         //get the first end of str3
-        reverse(str3.begin(), str3.end());		
+        reverse(str3.begin(), str3.end());
         str3.resize(minLength-i);
         reverse(str3.begin(), str3.end());
 
@@ -231,7 +228,7 @@ void combineStrings(vector<string>& data)
         possibleData.erase(possibleData.begin() + max(p.first, p.second)-1);
 
         //remove merged strings from cache
-        cache.remove(data[p.first], data[p.second]); 
+        cache.insertNewOverlap(data[p.first], data[p.second], jointString);
 
         //add new joint string to possible data
         possibleData.push_back(jointString);

@@ -101,9 +101,6 @@ int main()
       }
     }
 
-    //Redirect output to file
-    freopen("output.txt", "w", stdout);
-
     //Print Results
     cout << "There are " << Result.size() << " possible shortest common superstrings with length " << Result.begin()->length() << "." << endl << endl;
 

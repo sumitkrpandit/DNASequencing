@@ -2,4 +2,4 @@ There are 1 possible shortest common superstrings with length 12.
 
 xyzcdabccdef
 
-C Time: 0.0157189 seconds.
+C Time: 0.00274754 seconds.
