@@ -2,6 +2,8 @@
 #include <map>
 #include <vector>
 #include <utility>
+#include<iostream>
+#include<algorithm>
 
 using namespace std;
 
@@ -28,9 +30,24 @@ class Cache {
     void remove(const string& a, const string& b){
     }
 
-    void insertNewOverlap(string& a, string& b, string& ab) {
-      auto it = data.find(b);
-      it.first = ab;
+    void insertNewOverlap(const string& a, const string& b, const string& ab) {
+      /*
+       *Remove entry key "a" from map
+       *Replace entry key "b" with "ab"
+       *Remove entry key "b"
+       *Replace "a" with "ab" througout the value vectors
+       *Remove entry where "b" points to "a"
+       */
+
+      data.erase(a);
+      data[ab] = std::move(data[b]);
+      data.erase(b);
+      for(auto it = data[ab].begin(); it != data[ab].end(); ++it){
+        if(it->first == a){
+          data[ab].erase(it);
+        }
+      }
+      //std::remove_if(data[ab].begin(), data[ab].end(), [&](auto& entry)->bool{ return (entry.first == a); });
 
       for (auto & entry : data) {
         if (entry.first != ab) {
@@ -40,5 +57,16 @@ class Cache {
           }
         }
       }
+    }
+
+    friend ostream& operator<<(ostream& os, Cache& cache) {
+      for(auto& entry : cache.data) {
+        os << entry.first << endl;
+        for(auto& v : entry.second) {
+          os << "\t" << v.first << " -- " << v.second << endl;
+        }
+      }
+      return os;
+    }
 
 };
