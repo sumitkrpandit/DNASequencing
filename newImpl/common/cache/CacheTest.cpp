@@ -26,8 +26,12 @@ int main() {
     }
   }
   cache.Sort();
+  auto p = cache.get();
+  cout << p.first << "\t" << p.second.first << "\t" << p.second.second << "\n\n";
   cout << cache << endl;
   cache.insertNewOverlap("ABC", "BCD", "ABCD");
+  p = cache.get();
+  cout << p.first << "\t" << p.second.first << "\t" << p.second.second << "\n\n";
   cout << endl << cache << endl;
 
 

@@ -19,7 +19,8 @@ class Cache {
       for(auto & entry : data)
       {
         std::sort(entry.second.begin(), entry.second.end(),
-            [](const pair<string, int>& p1, const pair<string, int>& p2)->bool{ return p1.second > p2.second;
+            [](const pair<string, int>& p1, const pair<string, int>& p2)->bool {
+              return p1.second > p2.second;
             });
       }
     }
@@ -31,12 +32,15 @@ class Cache {
 
     //Returns the cached value for a to b.
     //If the overlap value is not in the cache, it returns -1
-    pair<string, int> get(const string& a) {
-      return data[a].front();
-    }
+    pair<string, pair<string, int>> get() {
+      pair<string, pair<string, int>> p = make_pair("", make_pair("", -1));
 
-    //Erases the overlap data for string a
-    void remove(const string& a, const string& b){
+      for(auto & entry : data) {
+         if(entry.second.front().second > p.second.second) {
+           p = make_pair(entry.first, entry.second.front());
+         }
+      }
+      return p;
     }
 
     void insertNewOverlap(const string& a, const string& b, const string& ab) {
