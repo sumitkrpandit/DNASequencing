@@ -15,6 +15,15 @@ class Cache {
     Cache(){ }
     ~Cache(){ }
 
+    void Sort() {
+      for(auto & entry : data)
+      {
+        std::sort(entry.second.begin(), entry.second.end(),
+            [](const pair<string, int>& p1, const pair<string, int>& p2)->bool{ return p1.second > p2.second;
+            });
+      }
+    }
+
     //Inserts the strings with strings of all possible overlap
     void put(const string& a, const string& b, const int& value) {
       data[a].push_back(make_pair(b, value));
@@ -47,7 +56,7 @@ class Cache {
           data[ab].erase(it);
         }
       }
-      //std::remove_if(data[ab].begin(), data[ab].end(), [&](auto& entry)->bool{ return (entry.first == a); });
+      //std::remove_if(data[ab].begin(), data[ab].end(), [&](const pair<string, int> &entry)->bool{ return (entry.first == a); });
 
       for (auto & entry : data) {
         if (entry.first != ab) {

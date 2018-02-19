@@ -25,7 +25,7 @@ int main() {
       }
     }
   }
-
+  cache.Sort();
   cout << cache << endl;
   cache.insertNewOverlap("ABC", "BCD", "ABCD");
   cout << endl << cache << endl;
