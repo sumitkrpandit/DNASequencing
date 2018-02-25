@@ -36,14 +36,14 @@
 using namespace std;
 namespace mpi = boost::mpi;
 
-#define pair<string, pair<string, int>> OverlapPair
+#define OverlapPair pair<string, pair<string, int>>
 
 /*************************************************************************
  * Recursive Function to combine a vector of strings into their shortest
  * common superstring
  * Parameters: A vector of strings
  */
-void combineStrings(vector<string>&, set<string, SortByLength>&);
+void combineStrings(Cache&);
 
 #define QUIT 0
 #define PROCESS_DATA 1
@@ -55,11 +55,10 @@ mpi::communicator world;
 int main()
 {
   vector<string> data;
+  struct timespec now, tmstart;
 
   if(world.rank() == 0) {
     //Routine for process 0
-    struct timespec now, tmstart;
-
     string str;
     vector<string> data;
 
@@ -107,13 +106,18 @@ int main()
 void combineStrings(Cache& cache) {
   int sum;
 
+  OverlapPair p;
   do {
-    OverlapPair p;
+
     reduce(world, cache.get(), p,
-        [](const OverlapPair& p1, const OverlapPair& p2)->bool{
-        return p1.second.second > p2.second.second;
+        [](const OverlapPair& p1, const OverlapPair& p2){
+          if(p1.second.second > p2.second.second)
+            return p1;
+          return p2;
         },
        0);
+
+    cout << cache << endl << p.first << " - " << p.second.first << " - " << p.second.second << endl << endl;
 
     cache.insertNewOverlap(p.first, p.second.first, mergeStrings(p));
     sum = all_reduce(world, cache.size(), std::plus<int>());
