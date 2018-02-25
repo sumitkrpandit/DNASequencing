@@ -31,7 +31,6 @@ class Cache {
     }
 
     //Returns the cached value for a to b.
-    //If the overlap value is not in the cache, it returns -1
     pair<string, pair<string, int>> get() {
       pair<string, pair<string, int>> p = make_pair("", make_pair("", -1));
 
@@ -51,16 +50,19 @@ class Cache {
        *Replace "a" with "ab" througout the value vectors
        *Remove entry where "b" points to "a"
        */
-
       data.erase(a);
-      data[ab] = std::move(data[b]);
-      data.erase(b);
-      for(auto it = data[ab].begin(); it != data[ab].end(); ++it){
-        if(it->first == a){
-          data[ab].erase(it);
+      auto it = data.find(b);
+      if(it != data.end()) {
+        data[ab] = std::move(data[b]);
+        data.erase(b);
+
+        for(auto it = data[ab].begin(); it != data[ab].end(); ++it) {
+          if(it->first == a) {
+            data[ab].erase(it);
+          }
         }
-      }
       //std::remove_if(data[ab].begin(), data[ab].end(), [&](const pair<string, int> &entry)->bool{ return (entry.first == a); });
+      }
 
       for (auto & entry : data) {
         if (entry.first != ab) {
