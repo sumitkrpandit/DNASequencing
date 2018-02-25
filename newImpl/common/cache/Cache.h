@@ -63,6 +63,7 @@ class Cache {
         for(auto it = data[ab].begin(); it != data[ab].end(); ++it) {
           if(it->first == a) {
             data[ab].erase(it);
+            --it;
           }
         }
       //std::remove_if(data[ab].begin(), data[ab].end(), [&](const pair<string, int> &entry)->bool{ return (entry.first == a); });
@@ -73,6 +74,12 @@ class Cache {
           for (auto & v : entry.second) {
             if (v.first == a)
               v.first = ab;
+          }
+          for(auto it = entry.second.begin(); it != entry.second.end(); ++it){
+            if(it->first == b){
+              entry.second.erase(it);
+              --it;
+            }
           }
         }
       }

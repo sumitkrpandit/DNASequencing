@@ -108,7 +108,6 @@ void combineStrings(Cache& cache) {
   do {
 
     cout << cache << endl;
-    cout << "---------------------------------------\n\n";
     reduce(world, cache.get(), p,
         [](const OverlapPair& p1, const OverlapPair& p2){
           if(p1.second.second > p2.second.second)
@@ -117,6 +116,7 @@ void combineStrings(Cache& cache) {
         },
        0);
 
+    cout << p.first << " - " << p.second.first << " - " << p.second.second << "---------------------------------------\n\n";
     cache.insertNewOverlap(p.first, p.second.first, mergeStrings(p));
     sum = all_reduce(world, cache.size(), std::plus<int>());
 
