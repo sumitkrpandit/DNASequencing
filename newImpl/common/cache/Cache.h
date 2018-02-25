@@ -15,6 +15,10 @@ class Cache {
     Cache(){ }
     ~Cache(){ }
 
+    int size() {
+      return data.size();
+    }
+
     void Sort() {
       for(auto & entry : data)
       {

@@ -80,6 +80,9 @@ void removeSubstrings(vector<string>& data)
   }
 }
 
+string mergeStrings(pair<string, pair<string, int>>& p) {
+  return p.first + p.second.first.substr(p.second.second);
+}
 
 //Functor to sort by length
 struct SortByLength
