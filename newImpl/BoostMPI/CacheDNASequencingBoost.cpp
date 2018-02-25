@@ -60,7 +60,6 @@ int main()
   if(world.rank() == 0) {
     //Routine for process 0
     string str;
-    vector<string> data;
 
     //Read each input string and add to vector
     while(cin >> str){
@@ -88,7 +87,6 @@ int main()
   //Sort Cache data
   cache.Sort();
 
-
   //Find all possible combinations for shortest common superstring
   combineStrings(cache);
 
@@ -109,6 +107,8 @@ void combineStrings(Cache& cache) {
   OverlapPair p;
   do {
 
+    cout << cache << endl;
+    cout << "---------------------------------------\n\n";
     reduce(world, cache.get(), p,
         [](const OverlapPair& p1, const OverlapPair& p2){
           if(p1.second.second > p2.second.second)
@@ -117,11 +117,12 @@ void combineStrings(Cache& cache) {
         },
        0);
 
-    cout << cache << endl << p.first << " - " << p.second.first << " - " << p.second.second << endl << endl;
-
     cache.insertNewOverlap(p.first, p.second.first, mergeStrings(p));
     sum = all_reduce(world, cache.size(), std::plus<int>());
 
     //Base case: Reduce on cache size
-  } while (sum > 1);
+  } while (sum != 1);
+
+  if(world.rank() == 0)
+    cout << mergeStrings(p) << endl;
 }
