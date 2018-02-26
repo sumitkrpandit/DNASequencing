@@ -43,13 +43,18 @@ namespace mpi = boost::mpi;
  * common superstring
  * Parameters: A vector of strings
  */
-void combineStrings(Cache&);
+string combineStrings(Cache&);
 
 #define QUIT 0
 #define PROCESS_DATA 1
 
 mpi::environment env;
 mpi::communicator world;
+
+ostream& operator<<(ostream& os, const OverlapPair& p) {
+  os << p.first << " - " << p.second.first << " - " << p.second.second << endl;
+  return os;
+}
 
 //Main function
 int main()
@@ -88,9 +93,11 @@ int main()
   cache.Sort();
 
   //Find all possible combinations for shortest common superstring
-  combineStrings(cache);
+  string result = combineStrings(cache);
 
   if(world.rank() == 0){
+    cout << "Result Length: " << result.length() << endl << endl;
+    cout << result << endl << endl;
     clock_gettime(CLOCK_REALTIME, &now); //end timer
     double seconds = (double)((now.tv_sec+now.tv_nsec*1e-9) - (double)(tmstart.tv_sec+tmstart.tv_nsec*1e-9));
 
@@ -101,28 +108,23 @@ int main()
 }
 
 
-void combineStrings(Cache& cache) {
+string combineStrings(Cache& cache) {
   int sum;
 
   OverlapPair p;
   do {
-
-    cout << cache << endl;
-    reduce(world, cache.get(), p,
+    p = all_reduce(world, cache.get(),
         [](const OverlapPair& p1, const OverlapPair& p2){
-          if(p1.second.second > p2.second.second)
+          if(p1.second.second >= p2.second.second)
             return p1;
           return p2;
-        },
-       0);
+        });
 
-    cout << p.first << " - " << p.second.first << " - " << p.second.second << "---------------------------------------\n\n";
     cache.insertNewOverlap(p.first, p.second.first, mergeStrings(p));
     sum = all_reduce(world, cache.size(), std::plus<int>());
 
     //Base case: Reduce on cache size
   } while (sum != 1);
 
-  if(world.rank() == 0)
-    cout << mergeStrings(p) << endl;
+  return mergeStrings(p);
 }
