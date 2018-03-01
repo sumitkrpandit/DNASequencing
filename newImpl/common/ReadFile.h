@@ -16,7 +16,7 @@ vector<string> readFile()
 
   while(getline(cin, str)) {
     getline(cin, str);
-    cout << str << endl << endl;
+    //cout << str << endl << endl;
     inputData.push_back(str);
     getline(cin, str);
   }
