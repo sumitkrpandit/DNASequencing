@@ -14,4 +14,4 @@ test: compile
 	./testme.sh
 
 clean:
-	rm -rf *.o a.out $(OBJS)
+	rm -rf *.o *.dat *.txt a.out $(OBJS)

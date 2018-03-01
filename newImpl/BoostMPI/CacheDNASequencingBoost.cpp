@@ -17,6 +17,7 @@
 
 #include "../common/StringProcessing.h"
 #include "../common/cache/Cache.h"
+#include "../common/ReadFile.h"
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -67,9 +68,7 @@ int main()
     string str;
 
     //Read each input string and add to vector
-    while(cin >> str){
-      data.push_back(str);
-    }
+    data = readFile();
 
     sort(data.begin(), data.end(), SortByLength()); //sort by length
     removeSubstrings(data); //remove substrings
