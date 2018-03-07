@@ -4,6 +4,7 @@
 #include <string>
 #include <algorithm>
 #include <utility>
+#include <vector>
 
 using namespace std;
 
@@ -80,7 +81,7 @@ void removeSubstrings(vector<string>& data)
   }
 }
 
-string mergeStrings(pair<string, pair<string, int>>& p) {
+string mergeStrings(const pair<string, pair<string, int>>& p) {
   return p.first + p.second.first.substr(p.second.second);
 }
 

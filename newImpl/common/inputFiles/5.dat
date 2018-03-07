@@ -1,5 +1,14 @@
-ABRAC
-ACADA
-ADABR
-DABRA
-RACAD
+1|random sequence|A: 0.25|C: 0.25|G: 0.25|T: 0.25|length: 6 bp
+ttgcat
+
+>2|random sequence|A: 0.25|C: 0.25|G: 0.25|T: 0.25|length: 9 bp
+acacgttgt
+
+>3|random sequence|A: 0.25|C: 0.25|G: 0.25|T: 0.25|length: 8 bp
+tcgacgat
+
+>4|random sequence|A: 0.25|C: 0.25|G: 0.25|T: 0.25|length: 7 bp
+gttactt
+
+>5|random sequence|A: 0.25|C: 0.25|G: 0.25|T: 0.25|length: 5 bp
+cgtat

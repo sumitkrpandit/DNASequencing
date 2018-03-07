@@ -4,15 +4,8 @@
  * Project: DNA Squencing with Shortest Common Superstring
  * Code: Parallel Version
  *
- * Input file: HPCSquadGoalsInput1.txt
  * Compilation Instructions: use the make file to comile
- * Execution Instructions: mpirun -np [number of processes] [exe name] < in.txt
  *
- * **The number of processors used must be at least N*(N-1)/2, where N is the number
- * **of strings in the input file. For optimal results, the number of processors
- * **should be as close to N*(N-1)/2 as possible.
- *
- * Output is written to HPCSquadGoalsOutput.txt
  */
 
 #include "../common/StringProcessing.h"
@@ -26,7 +19,6 @@
 #include <utility>
 #include <cstdio>
 #include <time.h>
-#include <mpi.h>
 #include <utility>
 #include <boost/mpi.hpp>
 #include <boost/serialization/string.hpp>
@@ -37,14 +29,14 @@
 using namespace std;
 namespace mpi = boost::mpi;
 
-#define OverlapPair pair<string, pair<string, int>>
+#define OverlapPair pair<int, pair<int, int>>
 
 /*************************************************************************
  * Recursive Function to combine a vector of strings into their shortest
  * common superstring
  * Parameters: A vector of strings
  */
-string combineStrings(Cache&);
+string combineStrings(Cache&, vector<string>&);
 
 #define QUIT 0
 #define PROCESS_DATA 1
@@ -83,7 +75,7 @@ int main()
   for(int i = 0, index; (index = world.rank() + world.size()*i) < data.size(); i++) {
     for(int j = 0; j < data.size(); ++j){
       if(j != index){
-        cache.put(data[index], data[j], overlapStrings(data[index], data[j]));
+        cache.put(index, j, overlapStrings(data[index], data[j]));
       }
     }
   }
@@ -92,7 +84,7 @@ int main()
   cache.Sort();
 
   //Find all possible combinations for shortest common superstring
-  string result = combineStrings(cache);
+  string result = combineStrings(cache, data);
 
   if(world.rank() == 0){
     cout << "Result Length: " << result.length() << endl << endl;
@@ -107,10 +99,12 @@ int main()
 }
 
 
-string combineStrings(Cache& cache) {
+string combineStrings(Cache& cache, vector<string>& data) {
   int sum;
 
   OverlapPair p;
+  string newString;
+
   do {
     p = all_reduce(world, cache.get(),
         [](const OverlapPair& p1, const OverlapPair& p2){
@@ -119,11 +113,14 @@ string combineStrings(Cache& cache) {
           return p2;
         });
 
-    cache.insertNewOverlap(p.first, p.second.first, mergeStrings(p));
+    newString = mergeStrings(make_pair(data[p.first], make_pair(data[p.second.first], p.second.second)));
+    replace(data.begin(), data.end(), data[p.second.first], newString);
+
+    cache.insertNewOverlap(p.first, p.second.first, p.second.first);
     sum = all_reduce(world, cache.size(), std::plus<int>());
 
     //Base case: Reduce on cache size
   } while (sum != 1);
 
-  return mergeStrings(p);
+  return newString;
 }

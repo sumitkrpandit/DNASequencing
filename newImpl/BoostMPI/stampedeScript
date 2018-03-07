@@ -1,0 +1,32 @@
+#!/bin/bash
+#----------------------------------------------------
+# Generic SLURM script -- MPI Hello World
+#
+# This script requests 2 nodes and all 16 cores/node
+# for a total of 32 MPI tasks.
+#----------------------------------------------------
+#SBATCH -J myjob          # Job name
+#SBATCH -o myjob.%j.out   # stdout; %j expands to jobid
+#SBATCH -e myjob.%j.err   # stderr; skip to combine stdout and stderr
+#SBATCH -p normal    # queue
+#SBATCH -N 4              # Number of nodes, not cores (16 cores/node)
+#SBATCH -n 256            # Total number of MPI tasks (if omitted, n=N)
+#SBATCH -t 00:30:00       # max time
+
+#SBATCH --mail-user=username@tacc.utexas.edu
+#SBATCH --mail-type=ALL
+
+#SBATCH -A CMPS-5433-MWSU  # class project/account code;
+                          # necessary if you have multiple project accounts
+
+       #sbatch [scriptName] --- send job to queue
+       #scancel [jobid] ---- cancel job
+       #showq -u [your username] ---- show your jobs on the queue
+
+module restore system
+module load fftw3         # Load any necessary modules (these are examples)
+module list
+
+ibrun ./CacheDNASequencingBoost < /home1/04352/aenem/repo/DNASequencing/newImpl/common/inputFiles/10000_seqs_70_150_bp.fasta    # Use ibrun only for MPI codes. Don't use mpirun or srun.
+                        # Do not add "-n" or "-np" options here. SLURM infers the
+                        # process count from the "-N" and "-n" directives above.
