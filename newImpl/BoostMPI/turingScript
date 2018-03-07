@@ -1,0 +1,13 @@
+#!/bin/bash
+
+    #PBS -l walltime=01:00:00
+    #PBS -l nice=10
+    #PBS -l nodes=10:ppn=16
+    #PBS -q default
+ 
+#Instructions
+#qsub [scriptName] --- send job to queue
+#qstat ---- view jobs on queue
+
+   # Run your executable
+   mpirun --mca mpi_cuda_support 0 $PBS_O_WORKDIR/CacheDNASequencingBoost < $PBS_O_WORKDIR/../common/inputFiles/10000_seqs_70_150_bp.fasta
