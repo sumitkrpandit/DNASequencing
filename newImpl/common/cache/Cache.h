@@ -1,8 +1,8 @@
 #include <map>
 #include <vector>
 #include <utility>
-#include<iostream>
-#include<algorithm>
+#include <iostream>
+#include <algorithm>
 
 using namespace std;
 
@@ -19,8 +19,7 @@ class Cache {
     }
 
     void Sort() {
-      for(auto & entry : data)
-      {
+      for(auto & entry : data) {
         std::sort(entry.second.begin(), entry.second.end(),
             [](const pair<int, int>& p1, const pair<int, int>& p2)->bool {
               return p1.second > p2.second;
@@ -28,58 +27,60 @@ class Cache {
       }
     }
 
-    //Inserts the ints with ints of all possible overlap
-    void put(const int& a, const int& b, const int& value) {
-      data[a].push_back(make_pair(b, value));
+    //Inserts an entry of two fragment indices (first, second) with their overlap value
+    void put(const int& first, const int& second, const int& value) {
+      data[first].push_back(make_pair(second, value));
     }
 
-    //Returns the cached value for a to b.
+    //Returns the entry with maximum overlap value
     pair<int, pair<int, int>> get() {
       pair<int, pair<int, int>> p = make_pair(-1, make_pair(-1, -1));
 
       for(auto & entry : data) {
-         if(entry.second.front().second > p.second.second) {
-           p = make_pair(entry.first, entry.second.front());
-         }
+        if(entry.second.front().second > p.second.second) {
+          p = make_pair(entry.first, entry.second.front());
+        }
       }
       return p;
     }
 
-    void insertNewOverlap(const int& a, const int& b, const int& ab) {
+    void insertNewOverlap(const int& first, const int& second) {
+      //This function combines "first" and "second" fragments in this order
+      //The index "second" is used as the index for the new combined fragment
+
       /*
-       *Remove entry key "a" from map
-       *Replace entry key "b" with "ab"
-       *Remove entry key "b"
-       *Replace "a" with "ab" througout the value vectors
-       *Remove entry where "b" points to "a"
+       *Remove entry key "first" from map ("first" can't be combined with other fragments)
+       *Remove entry second->first        ("second" can't come before "first")
+       *Remove [ANY]->second              (No other fragment can come directly before second)
+       *Replace [ANY]->first with [ANY]->second (Other fragments have an overlap with first, so they have
+                                                  the same overlap values for the new combined fragment)
        */
-      data.erase(a);
 
-      auto it = data.find(b);
-      if(it != data.end()) {
-        //data[ab] = std::move(data[b]);
-        //data.erase(b);
+      data.erase(first);
 
-        for(auto it = data[ab].begin(); it != data[ab].end(); ++it) {
-          if(it->first == a) {
-            data[ab].erase(it);
-            --it;
-          }
-        }
-      //std::remove_if(data[ab].begin(), data[ab].end(), [&](const pair<int, int> &entry)->bool{ return (entry.first == a); });
+      if(data.find(second) != data.end()) {
+        //Remove entry where second overlaps with first (second->first)
+        auto first_it = remove_if(data[second].begin(), data[second].end(),
+            [&](const pair<int, int>& entry)->bool {
+              return entry.first == first;
+            });
+        data[second].erase(first_it);
       }
 
       for (auto & entry : data) {
-        if (entry.first != ab) {
-          for(auto it = entry.second.begin(); it != entry.second.end(); ++it){
-            if(it->first == b){
-              entry.second.erase(it);
-              --it;
-            }
-          }
-          for (auto & v : entry.second) {
-            if (v.first == a)
-              v.first = ab;
+        if (entry.first != second) {
+
+          //Remove entry where any other fragment overlaps with second ([ANY]->second)
+          auto second_it = remove_if(entry.second.begin(), entry.second.end(),
+              [&](const pair<int, int>& p)->bool {
+              return p.first == second;
+              });
+          entry.second.erase(second_it);
+
+          //Change the second part of all overlap where [ANY]->first to [ANY]->second
+          for (auto & p : entry.second) {
+            if (p.first == first)
+              p.first = second;
           }
         }
       }
@@ -88,8 +89,8 @@ class Cache {
     friend ostream& operator<<(ostream& os, Cache& cache) {
       for(auto& entry : cache.data) {
         os << entry.first << endl;
-        for(auto& v : entry.second) {
-          os << "\t" << v.first << " -- " << v.second << endl;
+        for(auto& p : entry.second) {
+          os << "\t" << p.first << " -- " << p.second << endl;
         }
       }
       return os;

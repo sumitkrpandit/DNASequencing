@@ -4,6 +4,7 @@
  * **********************************************/
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -47,17 +48,17 @@ void printStats(vector<string>& stats,const int& size){
 
 }
 
-vector<string> readFile()
+vector<string> readFile(ifstream& infile)
 {
   string str;
   vector<string> inputData;
   vector<string> stats;
-  while(getline(cin, str)) {
+  while(getline(infile, str)) {
     stats.push_back(str);
-    getline(cin, str);
+    getline(infile, str);
     //cout << str << endl << endl;
     inputData.push_back(str);
-    getline(cin, str);
+    getline(infile, str);
   }
 
   printStats(stats, inputData.size());
