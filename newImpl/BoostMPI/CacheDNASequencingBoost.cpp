@@ -45,6 +45,12 @@ ostream& operator<<(ostream& os, const OverlapPair& p) {
   return os;
 }
 
+void log() {
+  cout << "-----------------------------------------------" << endl;
+  cout << "Num processors: " << world.size() << endl;
+  cout << "-----------------------------------------------" << endl;
+}
+
 //Main function
 int main(int argc, char* argv[])
 {
@@ -57,6 +63,8 @@ int main(int argc, char* argv[])
   struct timespec now, tmstart;
 
   if(world.rank() == 0) {
+    log();
+
     //Routine for process 0
     string str;
 
@@ -99,7 +107,7 @@ int main(int argc, char* argv[])
     clock_gettime(CLOCK_REALTIME, &now); //end timer
     double seconds = (double)((now.tv_sec+now.tv_nsec*1e-9) - (double)(tmstart.tv_sec+tmstart.tv_nsec*1e-9));
 
-    cout << endl << "C Time: " << seconds << " seconds." << endl;
+    cout << endl << "Time: " << seconds << " seconds." << endl;
   }
 
   return 0;

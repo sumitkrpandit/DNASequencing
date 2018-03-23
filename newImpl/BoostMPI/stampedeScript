@@ -4,7 +4,7 @@
 #
 #----------------------------------------------------
 #SBATCH -J myjob          # Job name
-#SBATCH -o myjob.%j.out   # stdout; %j expands to jobid
+#SBATCH -o 5.%j.out   # stdout; %j expands to jobid
 #SBATCH -e myjob.%j.err   # stderr; skip to combine stdout and stderr
 #SBATCH -p development    # queue
 #SBATCH -N 1              # Number of nodes, not cores (68 cores/node for KNL, 48 for skx)
