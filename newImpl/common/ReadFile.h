@@ -4,6 +4,7 @@
  * **********************************************/
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -11,7 +12,7 @@ using namespace std;
 
 void printStats(vector<string>& stats,const int& size){
   int avgBpLength = 0;
-  int totalBp = 0;
+  int totalFragments = 0;
   int minBpLength = 0;
   int maxBpLength = 0;
   double fracA = 0.0;
@@ -19,18 +20,18 @@ void printStats(vector<string>& stats,const int& size){
   double fracT = 0.0;
   double fracG = 0.0;
 
-  totalBp = stats.size();
-  avgBpLength = 150-80;
-  minBpLength = 80;
-  maxBpLength = 150;
+  totalFragments = stats.size();
+  avgBpLength = 125;
+  minBpLength = 50;
+  maxBpLength = 200;
   fracA = 0.25;
   fracC = 0.25;
   fracT = 0.25;
   fracG = 0.25;
 
-  if(size == totalBp) {
+  if(size == totalFragments) {
     cout << "-------------------Stats-----------------------\n";
-    cout << "Total base pairs = " << totalBp << endl;
+    cout << "Total fragments = " << totalFragments << endl;
     cout << "Average base pair length = " << avgBpLength << endl;
     cout << "Minimum base pair length = " << minBpLength << endl;
     cout << "Maximum base pair length = " << maxBpLength << endl;
@@ -47,17 +48,17 @@ void printStats(vector<string>& stats,const int& size){
 
 }
 
-vector<string> readFile()
+vector<string> readFile(ifstream& infile)
 {
   string str;
   vector<string> inputData;
   vector<string> stats;
-  while(getline(cin, str)) {
+  while(getline(infile, str)) {
     stats.push_back(str);
-    getline(cin, str);
+    getline(infile, str);
     //cout << str << endl << endl;
     inputData.push_back(str);
-    getline(cin, str);
+    getline(infile, str);
   }
 
   printStats(stats, inputData.size());

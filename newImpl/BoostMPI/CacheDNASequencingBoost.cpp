@@ -1,5 +1,4 @@
 /*
- * Team: #HPCSquadGoals
  * Team members: Anthony Enem, Ali Khalid
  * Project: DNA Squencing with Shortest Common Superstring
  * Code: Parallel Version
@@ -8,10 +7,11 @@
  *
  */
 
-#include "../common/StringProcessing.h"
-#include "../common/cache/Cache.h"
-#include "../common/ReadFile.h"
+#include <StringProcessing.h>
+#include <cache/Cache.h>
+#include <ReadFile.h>
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <algorithm>
 #include <vector>
@@ -25,7 +25,6 @@
 #include <boost/serialization/utility.hpp>
 #include <boost/serialization/vector.hpp>
 
-
 using namespace std;
 namespace mpi = boost::mpi;
 
@@ -38,9 +37,6 @@ namespace mpi = boost::mpi;
  */
 string combineStrings(Cache&, vector<string>&);
 
-#define QUIT 0
-#define PROCESS_DATA 1
-
 mpi::environment env;
 mpi::communicator world;
 
@@ -49,18 +45,37 @@ ostream& operator<<(ostream& os, const OverlapPair& p) {
   return os;
 }
 
+void log() {
+  cout << "-----------------------------------------------" << endl;
+  cout << "Num processors: " << world.size() << endl;
+  cout << "-----------------------------------------------" << endl;
+}
+
 //Main function
-int main()
+int main(int argc, char* argv[])
 {
+  if (argc < 2) {
+    cerr << "Wrong usage. Must specify input file!\n";
+    return -1;
+  }
+
   vector<string> data;
   struct timespec now, tmstart;
 
   if(world.rank() == 0) {
+    log();
+
     //Routine for process 0
     string str;
 
-    //Read each input string and add to vector
-    data = readFile();
+    ifstream infile(argv[1]);
+    if (infile) {
+      //Read each input string and add to vector
+      data = readFile(infile);
+    }
+    else {
+      cerr << "Failed to create ifstream from input file!\n";
+    }
 
     sort(data.begin(), data.end(), SortByLength()); //sort by length
     removeSubstrings(data); //remove substrings
@@ -92,7 +107,7 @@ int main()
     clock_gettime(CLOCK_REALTIME, &now); //end timer
     double seconds = (double)((now.tv_sec+now.tv_nsec*1e-9) - (double)(tmstart.tv_sec+tmstart.tv_nsec*1e-9));
 
-    cout << endl << "C Time: " << seconds << " seconds." << endl;
+    cout << endl << "Time: " << seconds << " seconds." << endl;
   }
 
   return 0;
@@ -101,26 +116,33 @@ int main()
 
 string combineStrings(Cache& cache, vector<string>& data) {
   int sum;
-
   OverlapPair p;
   string newString;
 
+  //Function used to compare overlap pairs by the overlap length
+  //Returns the pair with larger overlap length
+  auto compareOverlapPairs = [](const OverlapPair& p1, const OverlapPair& p2) {
+        if(p1.second.second > p2.second.second)
+          return p1;
+        return p2;
+      };
+
   do {
-    p = all_reduce(world, cache.get(),
-        [](const OverlapPair& p1, const OverlapPair& p2){
-          if(p1.second.second >= p2.second.second)
-            return p1;
-          return p2;
-        });
+    p = all_reduce(world, cache.get(), compareOverlapPairs);
 
+    //Merge first and second fragments into new fragment
     newString = mergeStrings(make_pair(data[p.first], make_pair(data[p.second.first], p.second.second)));
+    //Replace second fragment with new fragment
     replace(data.begin(), data.end(), data[p.second.first], newString);
+    //Replace first fragment with empty string to conserve memory
+    replace(data.begin(), data.end(), data[p.first], string(""));
 
-    cache.insertNewOverlap(p.first, p.second.first, p.second.first);
+    cache.insertNewOverlap(p.first, p.second.first);
+
+    //Get sum of cache sizes
     sum = all_reduce(world, cache.size(), std::plus<int>());
-
     //Base case: Reduce on cache size
-  } while (sum != 1);
+  } while (sum > 1);
 
   return newString;
 }
