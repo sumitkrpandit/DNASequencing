@@ -1,6 +1,6 @@
 library(ggplot2)
 
-data = read.csv("memory.csv")
+data = read.csv("../memory.csv")
 
 data$Size = as.factor(data$Size)
 
