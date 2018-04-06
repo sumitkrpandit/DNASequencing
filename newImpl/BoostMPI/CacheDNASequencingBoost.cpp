@@ -80,11 +80,13 @@ int main(int argc, char* argv[])
     sort(data.begin(), data.end(), SortByLength()); //sort by length
     removeSubstrings(data); //remove substrings
 
-    clock_gettime(CLOCK_REALTIME, &tmstart); //start timer
+    //clock_gettime(CLOCK_REALTIME, &tmstart); //start timer
   }
 
   Cache cache;
   broadcast(world, data, 0);
+
+  clock_gettime(CLOCK_REALTIME, &tmstart);
 
   //Calculate Cache values (P + TP(n))
   for(int i = 0, index; (index = world.rank() + world.size()*i) < data.size(); i++) {

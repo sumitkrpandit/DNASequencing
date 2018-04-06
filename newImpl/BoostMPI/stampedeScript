@@ -4,13 +4,13 @@
 #
 #----------------------------------------------------
 
-#SBATCH -J 80000_16384_11          # Job name
-#SBATCH -o 80000_16384_11.out   # stdout; %j expands to jobid
-#SBATCH -e 20000_256_1.err   # stderr; skip to combine stdout and stderr
-#SBATCH -p normal    # queue
-#SBATCH -N 241               # Number of nodes, not cores (68 cores/node for KNL, 48 for skx)
-#SBATCH -n 16384              # Total number of MPI tasks (if omitted, n=N)
-#SBATCH -t 00:00:01       # max time
+#SBATCH -J 7071_512_1          # Job name
+#SBATCH -o 7071_512_1.out   # stdout; %j expands to jobid
+#SBATCH -e 20000_128_1.err   # stderr; skip to combine stdout and stderr
+#SBATCH -p development    # queue
+#SBATCH -N 8              # Number of nodes, not cores (68 cores/node for KNL, 48 for skx)
+#SBATCH -n 512            # Total number of MPI tasks (if omitted, n=N)
+#SBATCH -t 00:30:00       # max time
 
 #SBATCH --mail-user=username@tacc.utexas.edu
 #SBATCH --mail-type=ALL
@@ -27,6 +27,6 @@ module restore system
 module load fftw3         # Load any necessary modules (these are examples)
 module list
 
-ibrun ./CacheDNASequencingBoost /home1/04352/aenem/repo/DNASequencing/newImpl/common/inputFiles/exp/80000_seqs_50_200_bp.fasta   # Use ibrun only for MPI codes. Don't use mpirun or srun.
+ibrun ./CacheDNASequencingBoost /home1/04352/aenem/repo/DNASequencing/newImpl/common/inputFiles/exp/7071_seqs_50_200_bp.fasta   # Use ibrun only for MPI codes. Don't use mpirun or srun.
                         # Do not add "-n" or "-np" options here. SLURM infers the
                         # process count from the "-N" and "-n" directives above.
