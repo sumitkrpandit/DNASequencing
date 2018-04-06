@@ -3,9 +3,9 @@ library(ggplot2)
 data = read.csv("../weakscaling.csv")
 
 
-ggplot(data, aes(x = Processors, y = Speedup)) + 
+ggplot(data, aes(x = Processors, y = Rate)) + 
   geom_point(size=2, color = "red") + geom_line(size = 1, color = "red") + 
-  scale_x_log10(breaks = c(64,128, 256, 512, 1024, 2048, 4096, 8192, 16384)) + 
+  scale_x_log10(breaks = c(1, 2, 4, 8, 16, 32, 64,128, 256, 512, 1024, 2048, 4096, 8192, 16384)) + 
   #scale_y_continuous(breaks = c(1, 2, 3, 4, 5)) +
   xlab("Number of Cores") +  
   #ggtitle("") +
